@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>主页</title>
+
+    <!-- Bootstrap -->
+    <!-- Bootstrap -->
+    <link th:href="@{/css/bootstrap.min.css}"   rel="stylesheet"/>
+
+
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <script>
+        $(function () {
+            var  Path ="http://192.168.1.131:8091/" ;
+            // var contextPath ="${apiPath}" ;
+           // var url =contextPath+"api/user/userList";
+            // $("#userLsit").click(
+                  {
+
+                    var contextPath ="http://192.168.1.131:8091/" ;
+                    // var contextPath ="${apiPath}" ;
+                    var url =contextPath+"api/user/userList";
+                    $.ajax({
+                        type: "get",
+                        url: url,
+                        async:false, //不是异步处理
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+
+                        success:function(data){
+                            if(data.code=="success"){
+                                var html="";
+                                console.log(data.content);
+
+
+
+                                for(var i=0;i<data.content.length;i++)
+                                {
+                                    html+="<tr><td>"+data.content[i].id+"</td>"
+                                        +"<td>"+data.content[i].lastName.toString()+data.content[i].firstName.toString()
+                                        +" <td> <a href=\"#\"class=\"glyphicon glyphicon-eye-open alert-info \" data-toggle=\"modal\"  data-target=\"#AddUserInfo\"></a>\n" +
+                                        "  <a href=\"#\" class=\"glyphicon glyphicon-pencil alert-success\"  onclick= \" +BindData(data.content[i]) +\" ></a>\n" +
+                                        "  <a href=\"#\" class=\"glyphicon glyphicon glyphicon-remove alert-danger\"></a></td>"
+
+                                        +"</tr>";
+                                }
+                                $("#userList").html(html);
+
+                            }else{
+                                alert(data.errMsg.toString());
+                                // window.location.href=contextPath+"/login";
+                            }
+                        },
+                        error:function(result){
+                            alert("未知异常：可能是url异常！");
+                            //  window.location.href=contextPath+"/login";
+                        }
+                    });
+
+
+                }
+            // ) ;
+            function BindData(content) {
+                     $("#inputid").textContent=content.id;
+                     $("#inputname").textContent=content.LastName.toString()+content.FirstName.toString();
+                     $("#inputemail").textContent=content/email;
+                     $(this).attr("data-toggle","modal");
+                     //=""
+                     $(this).attr("data-target","#UpdateUserInfo");
+
+
+
+
+
+            }
+
+
+            $("#addUserSave").click(
+                function () {
+                    // var contextPath = $('#contextPath').attr('href');
+                    var url =contextPath+"api/user/userSave";
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data:JSON.stringify({
+                            id: $("#addId").val(),
+                            userName:$("#addName").val(),
+                            email:$("#addEmail").val(),
+                            group:$("#addGroup").val()
+                        }),
+                        async:false, //不是异步处理
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        processData:false,
+                        success:function(data){
+                            if(data.code=="success"){
+                                alert("新增用户成功");
+                                return false;
+                            }else{
+                                alert(data.errMsg);
+                            }
+                        },
+                        error:function(result){
+                            alert(result.responseJSON.msg);
+                        }
+                    });
+                    return false;
+
+
+                }
+            )
+
+
+
+
+
+
+
+        });
+
+    </script>
+    <style>
+        .input-group {
+            margin: 2px;
+        }
+    </style>
+
+
+</head>
+
+
+<body>
+    <!-- <div class="jumbotron">
+      <h1>Hello, world!</h1>
+      <p>...</p>
+      <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+    </div> -->
+    <div class="container">
+
+        <div class="row">
+            <!--        pageHeader-->
+            <div class=" col-md-12">
+                <div class="page-header">
+                    <h1>星才科技审批网站 <small>管理员界面</small></h1>
+                </div>
+
+
+            </div>
+            <!--        pageNav-->
+            <div class="col-xs-3 " style="height: 70%;">
+                <ul class="nav nav-tabs nav-pills nav-stacked">
+                    <li role="presentation" ><a th:href="@{/home}">主页</a></li>
+                    <li role="presentation" class="active"><a th:href="@{/admin/userManage}">用户管理</a></li>
+                    <li role="presentation"><a th:href="@{/admin/processManage}">流程管理</a></li>
+                </ul>
+
+            </div>
+
+            <div class="col-xs-9">
+                <!--        pagePath-->
+                <ol class="breadcrumb">
+                    <li><a  th:href="@{/admin/userManage}">用户管理</a></li>
+
+                </ol>
+
+                <!--userManage part-->
+                <div>
+
+                    <div class="row">
+                        <!--usersearch part-->
+                        <div class="col-xs-6">
+                            <span class="input-group">
+                                <span>
+                                    <input type="text" class="form-control" placeholder="根据用户名或姓名查找用户...">
+                                </span>
+                                <span class="input-group-btn">
+
+                                    <button class="btn btn-default " id="userSearch" type="button"> 查找</button>
+                                </span>
+                            </span><!-- /input-group -->
+                        </div>
+                        <div class="col-xs-6">
+                            <A class="glyphicon glyphicon-plus" id="addUser" data-toggle="modal" data-target="#AddUserInfo">添加用户</A>
+
+                        </div>
+                    </div>
+                    <!--userManage part end -->
+
+
+
+
+                </div>
+
+
+                <!--userListshow-->
+                <div>
+                    <table class="table table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <td>用户名</td>
+                            <td>姓名</td>
+
+                            <td>操作</td>
+
+                        </tr>
+
+
+                        </thead>
+                        <tbody  id="userList">
+
+
+                        </tbody>
+                    </table>
+
+                    <!--  pageNumberLink-->
+                    <div class="text-center">
+                        <!-- <div class="btn-group text-center" role="group" aria-label="..."> -->
+                        <button type="button" class="btn btn-default disabled ">《 </button>
+                        <button type="button" class="btn btn-default active ">1 </button>
+                        <button type="button" class="btn btn-default">2</button>
+                        <button type="button" class="btn btn-default">3</button>
+                        <button type="button" class="btn btn-default">...</button>
+
+                        <button type="button" class="btn btn-default  ">》</button>
+                        <!-- </div> -->
+
+                    </div>
+
+
+                </div>
+                <!--userListshow end-->
+
+            </div>
+
+        </div>
+        <!--        pageFooter-->
+        <div class="row">
+            <div class="panel-footer navbar-fixed-bottom text-center">@copyright xckj</div>
+
+        </div>
+
+        <!-- AddUserModal -->
+        <div class="modal fade" id="AddUserInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-center" id="myModalLabel">新增用户信息</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="  ">
+                            <div class="row ">
+                                <div class="col-xs-8 col-xs-offset-2 userInfo">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-id">账号</span>
+                                        <input type="text" id=" addId" class="form-control" placeholder="UserId"
+                                            aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="col-xs-8 col-xs-offset-2 userInfo">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-name">姓名</span>
+                                        <input type="text" id="addName" class="form-control" placeholder="Username"
+                                            aria-describedby="basic-addon1" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-email">邮箱</span>
+                                        <input type="email" id="addEmail" class="form-control" placeholder="email"
+                                            aria-describedby="basic-addon1" required >
+                                    </div>
+                                </div>
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-group">部门</span>
+                                        <input type="text"  id ="addGroup"class="form-control" placeholder="group"
+                                               aria-describedby="basic-addon1" required >
+                                    </div>
+                                </div>
+                                <div class="col-xs-8 col-xs-offset-2">
+
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-addon1">照片</span>
+                                        <input type="file" class="form-control" placeholder="Username"
+                                            aria-describedby="basic-addon1">
+                                    </div>
+
+                                </div>
+                               
+
+                             </div>
+
+
+
+
+
+
+                        </form>
+
+                    </div>
+                    <br>
+                    <div class="modal-footer">
+
+                        <button type="button" id="addUserSave" class="btn btn-primary">保存</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </div>
+                   
+                </div>
+                
+            </div>
+        </div>
+
+
+        <!-- UpdateUserModal -->
+    </div>
+
+
+
+
+
+
+
+
+</body>
+</html>

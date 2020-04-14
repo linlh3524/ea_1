@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>个人信息</title>
+
+    <!-- Bootstrap -->
+    <!-- Bootstrap -->
+    <link th:href="@{/css/bootstrap.min.css}"   rel="stylesheet"/>
+
+
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <script>
+        $(function () {
+            var  Path ="http://192.168.1.131:8091/" ;
+            // var contextPath ="${apiPath}" ;
+           // var url =contextPath+"api/user/userList";
+            // $("#userLsit").click(
+                  {
+
+                    var contextPath ="http://192.168.1.131:8091/" ;
+                    // var contextPath ="${apiPath}" ;
+                    var url =contextPath+"api/user/userList";
+                    $.ajax({
+                        type: "get",
+                        url: url,
+                        async:false, //不是异步处理
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+
+                        success:function(data){
+                            if(data.code=="success"){
+                                var html="";
+                                console.log(data.content);
+
+
+
+                                for(var i=0;i<data.content.length;i++)
+                                {
+                                    html+="<tr><td>"+data.content[i].id+"</td>"
+                                        +"<td>"+data.content[i].lastName.toString()+data.content[i].firstName.toString()
+                                        +" <td> <a href=\"#\"class=\"glyphicon glyphicon-eye-open alert-info \" data-toggle=\"modal\"  data-target=\"#AddUserInfo\"></a>\n" +
+                                        "  <a href=\"#\" class=\"glyphicon glyphicon-pencil alert-success\"  onclick= \" +BindData(data.content[i]) +\" ></a>\n" +
+                                        "  <a href=\"#\" class=\"glyphicon glyphicon glyphicon-remove alert-danger\"></a></td>"
+
+                                        +"</tr>";
+                                }
+                                $("#userList").html(html);
+
+                            }else{
+                                alert(data.errMsg.toString());
+                                // window.location.href=contextPath+"/login";
+                            }
+                        },
+                        error:function(result){
+                            alert("未知异常：可能是url异常！");
+                            //  window.location.href=contextPath+"/login";
+                        }
+                    });
+
+
+                }
+            // ) ;
+            function BindData(content) {
+                     $("#inputid").textContent=content.id;
+                     $("#inputname").textContent=content.LastName.toString()+content.FirstName.toString();
+                     $("#inputemail").textContent=content/email;
+                     $(this).attr("data-toggle","modal");
+                     //=""
+                     $(this).attr("data-target","#UpdateUserInfo");
+
+
+
+
+
+            }
+
+
+            $("#addUserSave").click(
+                function () {
+                    // var contextPath = $('#contextPath').attr('href');
+                    var url =contextPath+"api/user/userSave";
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data:JSON.stringify({
+                            id: $("#addId").val(),
+                            userName:$("#addName").val(),
+                            email:$("#addEmail").val(),
+                            group:$("#addGroup").val()
+                        }),
+                        async:false, //不是异步处理
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        processData:false,
+                        success:function(data){
+                            if(data.code=="success"){
+                                alert("新增用户成功");
+                                return false;
+                            }else{
+                                alert(data.errMsg);
+                            }
+                        },
+                        error:function(result){
+                            alert(result.responseJSON.msg);
+                        }
+                    });
+                    return false;
+
+
+                }
+            )
+
+
+
+
+
+
+
+        });
+
+    </script>
+    <style>
+        .input-group {
+            margin: 2px;
+        }
+    </style>
+
+
+</head>
+
+
+<body>
+    <!-- <div class="jumbotron">
+      <h1>Hello, world!</h1>
+      <p>...</p>
+      <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+    </div> -->
+    <div class="container">
+
+        <div class="row">
+            <!--        pageHeader-->
+            <div class=" col-md-12">
+                <div class="page-header">
+                    <h1>星才科技审批网站 <small>用户界面</small></h1>
+                </div>
+
+
+            </div>
+            <!--        pageNav-->
+            <div class="col-xs-3 " style="height: 70%;">
+                <ul class="nav nav-tabs nav-pills nav-stacked">
+                    <li role="presentation" ><a th:href="@{/user/message}">消息</a></li>
+                    <li role="presentation" ><a th:href="@{/user/task}">任务</a></li>
+                    <li role="presentation" class="active"><a th:href="@{/user/myInfo}">我的</a></li>
+                </ul>
+
+            </div>
+            <div class="col-xs-9">
+                <ol class="breadcrumb">
+                    <li><a th:href="@{/user/myInfo}">我的</a></li>
+
+                </ol>
+
+            </div>
+            <div class="col-xs-9">
+我的个人信息
+
+
+
+            </div>
+
+        </div>
+        <!--        pageFooter-->
+        <div class="row">
+            <div class="panel-footer navbar-fixed-bottom text-center">@copyright xckj</div>
+
+        </div>
+
+        <!-- AddUserModal -->
+
+        <!-- UpdateUserModal -->
+    </div>
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>用户主页</title>
+    <link th:href="@{/css/bootstrap.min.css}"   rel="stylesheet"/>
+
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script  >
+
+        $(function () {
+            $("#task").click(
+                function () {
+
+                    {
+                        var contextPath = "http://192.168.1.131:8091/";
+                        // var contextPath ="${apiPath}" ;
+                        var url = contextPath + "api/task/tologin/userid/" + id + "/pwd/" + pwd;
+                        $.ajax({
+                            type: "get",
+                            url: url,
+                            async: false, //不是异步处理
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+
+                            success: function (data) {
+                                if (data.code == "success") {
+                                    //  alert(data.code.toString());
+                                    // alert("success");
+
+                                    //跳转到主页
+                                    window.location.href = contextPath + "home";
+
+                                } else {
+                                    alert(data.errMsg.toString());
+                                    // window.location.href=contextPath+"/login";
+                                }
+                            },
+                            error: function (result) {
+                                alert("NAN");
+                                //  window.location.href=contextPath+"/login";
+                            }
+
+
+                        });
+                    }
+
+
+                }
+
+
+            )});
+
+
+
+
+
+
+
+
+
+    </script>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="row">
+        <!--        pageHeader-->
+        <div class=" col-md-12">
+            <div class="page-header">
+                <h1>星才科技审批网站 <small>用户界面</small></h1>
+            </div>
+
+
+        </div>
+        <!--        pageNav-->
+        <div class="col-xs-3 " style="height: 70%;">
+            <ul class="nav nav-tabs nav-pills nav-stacked">
+                <li role="presentation" class="active" ><a th:href="@{/user/message}">消息</a></li>
+                <li role="presentation"><a th:href="@{/user/task}">任务</a></li>
+                <li role="presentation"><a th:href="@{/user/myInfo}">我的</a></li>
+            </ul>
+
+        </div>
+
+        <div class="col-xs-9">
+            <!--        pagePath-->
+            <ol class="breadcrumb">
+                <li><a  th:href="@{/user/message}">消息</a></li>
+
+            </ol>
+
+
+
+
+
+        </div>
+
+    </div>
+    <!--        pageFooter-->
+    <div class="row">
+        <div class="panel-footer navbar-fixed-bottom text-center">@copyright xckj</div>
+
+    </div>
+
+    <!-- AddUserModal -->
+    <div class="modal fade" id="AddUserInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-center" id="myModalLabel">新增用户信息</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="  ">
+                        <div class="row ">
+                            <div class="col-xs-8 col-xs-offset-2 userInfo">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-id">账号</span>
+                                    <input type="text" id=" addId" class="form-control" placeholder="UserId"
+                                           aria-describedby="basic-addon1">
+                                </div>
+                            </div>
+                            <div class="col-xs-8 col-xs-offset-2 userInfo">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-name">姓名</span>
+                                    <input type="text" id="addName" class="form-control" placeholder="Username"
+                                           aria-describedby="basic-addon1" required>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-8 col-xs-offset-2">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-email">邮箱</span>
+                                    <input type="email" id="addEmail" class="form-control" placeholder="email"
+                                           aria-describedby="basic-addon1" required >
+                                </div>
+                            </div>
+                            <div class="col-xs-8 col-xs-offset-2">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-group">部门</span>
+                                    <input type="text"  id ="addGroup"class="form-control" placeholder="group"
+                                           aria-describedby="basic-addon1" required >
+                                </div>
+                            </div>
+                            <div class="col-xs-8 col-xs-offset-2">
+
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="basic-addon1">照片</span>
+                                    <input type="file" class="form-control" placeholder="Username"
+                                           aria-describedby="basic-addon1">
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+
+                    </form>
+
+                </div>
+                <br>
+                <div class="modal-footer">
+
+                    <button type="button" id="addUserSave" class="btn btn-primary">保存</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- UpdateUserModal -->
+</div>
+
+
+
+</body>
+</html>

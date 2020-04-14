@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>任务</title>
+    <!-- Bootstrap -->
+    <link th:href="@{/css/bootstrap.min.css}"   rel="stylesheet"/>
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script>
+      var grobalid="";
+      var contextPath ="http://192.168.1.131:8091/" ;
+      function proInstance(id){
+
+        var url =contextPath+"api/deployment/event/proDefId/"+id;
+        $.ajax({
+          type: "get",
+          url: url,
+          async:false, //不是异步处理
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+
+          success:function(data){
+
+            if(data.code=="success"){
+              var html="";
+              console.log(data.content);
+              if(data.content.length!=0)
+              {
+                $("#event_theme").next().val(data.content[0].eventTheme);
+                $("#event_level").next().val(data.content[0].eventLevel);
+                $("#location").next().val(data.content[0].lcation);
+                $("#death_count").next().val(data.content[0].deathCount);
+                $("#receive_time").next().val(data.content[0].receiveTime);
+                $("#event_type").next().val(data.content[0].eventType);
+                $("#description").next().val(data.content[0].description);
+                $("#relevant_doc").next().val(data.content[0].relevantDoc);
+                $("#default_expert").next().val(data.content[0].defaultExpert);
+                $('input').attr("readonly","readonly")
+              }
+              else
+              {
+                html="<tr ><td colspan='3'>暂无可处理流程。</td></tr>"
+                $("#taskList").html(html);
+
+              }
+            }else{
+              alert(data.errMsg.toString());
+              // window.location.href=contextPath+"/login";
+            }
+          },
+          error:function(xhr, textStatus, errorThrown){
+            alert("未知异常：可能是url异常！");
+
+            console.info("状态码："+xhr.status+"\n状态:"
+                    +xhr.readyState+"\n错误信息:"+xhr.statusText
+                    +"\n返回响应信息："+xhr.responseText+"请求状态："
+                    +textStatus+"异常抛出："+errorThrown);
+          }
+        });
+
+
+        $("#myModal").modal();
+
+             grobalid=id;
+
+      }
+      function hisDetail(id){
+
+      }
+      //修改数据
+      $("#btnModify").click(
+              function () {
+                $('input').removeAttr("readonly");//去除input元素的readonly属性
+
+              }
+      )
+
+      $(function () {
+        $("#myApply").addClass("show");
+        //显示处理任务
+        $("#btnAprove").click(
+                function () {
+                 $("#myHistory").removeClass("show");
+                  $("#myAprove").addClass("show");
+                  $("#myApply").removeClass("show");
+
+                }
+        );
+        //显示发起任务
+        $("#btnApply").click(
+                function () {
+                  $("#myAprove").removeClass("show");
+                  $("#myHistory").removeClass("show");
+                  $("#myApply").addClass("show");
+
+                }
+        );
+
+        //显示历史任务
+        $("#btnHistory").click(
+                function () {
+                  $("#myAprove").removeClass("show");
+                  $("#myHistory").addClass("show");
+                  $("#myApply").removeClass("show");
+
+                }
+        );
+
+        {
+
+       //   var contextPath ="http://192.168.1.131:8091/" ;
+          var url =contextPath+"api/task/todoTask/page/"+1+"/size/"+10;
+          //绑定待办任务
+          $.ajax({
+            type: "get",
+            url: url,
+            async:false, //不是异步处理
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+
+            success:function(data){
+
+              if(data.code=="success"){
+                var html="";
+                console.log(data.content);
+
+                if(data.content.length!=0)
+                {
+                  for(var i=0;i<data.content.length;i++)
+                  {
+                    html+="<tr><td>"+data.content[i].id+"</td>"
+                            +"<td>"+data.content[i].name.toString()
+                            +" <td> <a href='#'>处理</a></td>"
+
+                            +"</tr>";
+                  }
+                  $("#taskList").html(html);
+                }
+                else
+                {
+                  html="<tr ><td colspan='3'>暂无需处理任务。</td></tr>"
+                  $("#taskList").html(html);
+
+                }
+
+
+
+              }else{
+                alert(data.errMsg.toString());
+                // window.location.href=contextPath+"/login";
+              }
+            },
+            error:function(xhr, textStatus, errorThrown){
+              alert("未知异常：可能是url异常！");
+
+                console.info("状态码："+xhr.status+"\n状态:"
+                    +xhr.readyState+"\n错误信息:"+xhr.statusText
+                    +"\n返回响应信息："+xhr.responseText+"请求状态："
+                    +textStatus+"异常抛出："+errorThrown);
+            }
+          });
+
+
+          //获取流程
+        var url =contextPath+"api/deployment/list/page/"+1+"/size/"+10;
+          $.ajax({
+            type: "get",
+            url: url,
+            async:false, //不是异步处理
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+
+            success:function(data){
+
+              if(data.code=="success"){
+                var html="";
+                console.log(data.content);
+
+                if(data.content.length!=0)
+                {
+                  for(var i=0;i<data.content.length;i++)
+                  {
+                    html+="<tr><td>"+data.content[i].id+"</td>"
+                            +"<td>"+data.content[i].name.toString()
+                            +" <td  ><a   onclick='proInstance(\""+data.content[i].id+"\")'  >发起</a> </td>"
+
+                            +"</tr>";
+
+                  }
+                  $("#applyList").html(html);
+                }
+                else
+                {
+                  html.append("暂无可用流程。")
+                  $("#applyList").html(html);
+
+                }
+
+
+
+              }else{
+                alert(data.errMsg.toString());
+                // window.location.href=contextPath+"/login";
+              }
+            },
+            error:function(xhr, textStatus, errorThrown){
+              alert("未知异常：可能是url异常！");
+
+              console.info("状态码："+xhr.status+"\n状态:"
+                      +xhr.readyState+"\n错误信息:"+xhr.statusText
+                      +"\n返回响应信息："+xhr.responseText+"请求状态："
+                      +textStatus+"异常抛出："+errorThrown);
+            }
+          });
+
+          //获取历史任务
+          var url =contextPath+"api/task/historyTask/list/page/1/size/11";
+          $.ajax({
+            type: "get",
+            url: url,
+            async:false, //不是异步处理
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+
+            success:function(data){
+
+              if(data.code=="success"){
+                var html="";
+                console.log(data.content);
+
+                if(data.content.length!=0)
+                {
+                  for(var i=0;i<data.content.length;i++)
+                  {
+                    html+="<tr><td>"+data.content[i].id+"</td>"
+                            +"<td>"+data.content[i].name.toString()
+                            +" <td  ><a   onclick='hisDetail(\""+data.content[i]+"\")'  >详情</a> </td>"
+
+                            +"</tr>";
+
+                  }
+                  $("#historyList").html(html);
+                }
+                else
+                {
+                  html.append("暂无历史任务。")
+                  $("#applyList").html(html);
+
+                }
+
+
+
+              }else{
+                alert(data.errMsg.toString());
+                // window.location.href=contextPath+"/login";
+              }
+            },
+            error:function(xhr, textStatus, errorThrown){
+              alert("未知异常：可能是url异常！");
+
+              console.info("状态码："+xhr.status+"\n状态:"
+                      +xhr.readyState+"\n错误信息:"+xhr.statusText
+                      +"\n返回响应信息："+xhr.responseText+"请求状态："
+                      +textStatus+"异常抛出："+errorThrown);
+            }
+          });
+
+        }
+
+      });
+
+
+
+    </script>
+ 
+    
+  </head>
+  
+  <body>
+
+    <div class="container">
+        <div class="row">
+          <div class=" col-md-12">
+            <!--my pageheader -->
+            <div class="page-header">
+              <h1>星才科技审批网站 <small>用户界面</small></h1>
+            </div>
+            </div>
+            <!--my pageheader end -->
+
+        <!--my nav -->
+        <div class="col-xs-3 " style="height: 70%;">
+          <ul class="nav nav-tabs nav-pills nav-stacked">
+            <li role="presentation" ><a th:href="@{/user/message}">消息</a></li>
+            <li role="presentation" class="active"><a th:href="@{/user/task}">任务</a></li>
+            <li role="presentation"><a th:href="@{/user/myInfo}">我的</a></li>
+          </ul>
+
+        </div>
+        <!--my nav end -->
+
+        <!--my path -->
+        <div class="col-xs-9 " >
+            <ol class="breadcrumb">
+                <li><a th:href="@{/user/task}">任务</a></li>
+                
+              </ol>
+
+        </div>
+        <!--my path end -->
+
+        <!--my subnav -->
+        <div class="col-xs-9 ">
+          <ul class="nav nav-tabs nav-justified">
+            <li role="presentation" class="active"><a   id="btnApply">发起任务</a></li>
+            <li role="presentation"><a   id="btnAprove">待我处理</a></li>
+            <li role="presentation"><a   id="btnHistory">历史任务</a></li>
+          </ul>
+        </div>
+        <!--my subnav end -->
+
+        <div  id="myAprove" class="col-xs-9  hide   " >
+        <table class="table table table-striped table-hover">
+        <thead>
+        <tr>
+          <td colspan="3">待处理任务</td>
+
+
+        </tr>
+        <tr>
+          <td>任务ID</td>
+          <td>任务名</td>
+
+          <td>操作</td>
+
+        </tr>
+
+
+        </thead>
+        <tbody  id="taskList">
+
+
+        </tbody>
+      </table>
+
+      <!--  pageNumberLink-->
+      <!--          <div class="text-center">-->
+      <!--            &lt;!&ndash; <div class="btn-group text-center" role="group" aria-label="..."> &ndash;&gt;-->
+      <!--            <button type="button" class="btn btn-default disabled ">《 </button>-->
+      <!--            <button type="button" class="btn btn-default active ">1 </button>-->
+      <!--            <button type="button" class="btn btn-default">2</button>-->
+      <!--            <button type="button" class="btn btn-default">3</button>-->
+      <!--            <button type="button" class="btn btn-default">...</button>-->
+
+      <!--            <button type="button" class="btn btn-default  ">》</button>-->
+      <!--            &lt;!&ndash; </div> &ndash;&gt;-->
+
+      <!--          </div>-->
+
+
+        </div>
+        <!--myAprove end-->
+        <div  id="myApply" class="col-xs-9  hide   " >
+          <table class="table table table-striped table-hover">
+            <thead>
+            <tr>
+              <td colspan="3">可发起流程</td>
+
+
+            </tr>
+            <tr>
+              <td>流程ID</td>
+              <td>流程名</td>
+
+              <td>操作</td>
+
+            </tr>
+
+
+            </thead>
+            <tbody  id="applyList">
+
+
+            </tbody>
+          </table>
+        </div>
+        <!---myApply end -->
+        <div  id="myHistory" class="col-xs-9  hide   " >
+          <table class="table table table-striped table-hover">
+            <thead>
+            <tr>
+              <td colspan="3">处理历史</td>
+
+
+            </tr>
+            <tr>
+              <td>任务ID</td>
+              <td>任务名</td>
+
+              <td>详情</td>
+
+            </tr>
+
+
+            </thead>
+            <tbody  id="historyList">
+
+
+            </tbody>
+          </table>
+
+
+
+        </div>
+        <!--myHistory end-->
+
+
+    </div>
+
+      <!--my copyright -->
+      <div class="row">
+        <div class="panel-footer navbar-fixed-bottom text-center">@copyright xckj</div>
+
+      </div>
+      <!--my copyright end -->
+     
+
+    </div>
+
+    <!--    发起任务模态框-->
+    <div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">填写事件信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row ">
+              <div class="col-xs-10 col-xs-offset-1">
+                <div class="input-group text-justify  ">
+                  <span class="input-group-addon" id="receive_time">时间</span>
+                  <input type="text" class="form-control"   aria-describedby="basic-addon1">
+                </div>
+
+                <div class="input-group ">
+                  <span class="input-group-addon text-justify" id="location">地点</span>
+                  <input type="text" class="form-control"   aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group ">
+                  <span class="input-group-addon text-justify" id="event_theme">事件</span>
+                  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group ">
+                  <span class="input-group-addon text-justify" id="death_count">死亡人数</span>
+                  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+                </div>
+
+                <div class="input-group ">
+                  <span class="input-group-addon text-justify" id="description">事件基本信息</span>
+                  <textarea   class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+                  </textarea>
+                </div>
+
+                <div class="input-group ">
+                  <span class="input-group-addon text-justify" id="event_type">事件类型</span>
+                  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group ">
+                  <span class="input-group-addon text-justify" id="event_level">事件等级</span>
+                  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group ">
+                  <span class="input-group-addon text-justify" id="relevant_doc">关联预案</span>
+                  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group ">
+                  <span class="input-group-addon text-justify" id="default_expert">默认专家组</span>
+                  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+                </div>
+              </div>
+
+            </div>
+<!--            end row-->
+          </div>
+      <!-- end modal-body-->
+          <div class="modal-footer">
+
+            <button type="button" id="btnsubmit" class="btn btn-primary">提交</button>
+            <button type="button" id="btnModify"class="btn btn-info">修改</button>
+            <button type="button" id="btnCancel" class="btn btn-default" data-dismiss="modal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!--历史详情模态框-->
+    <div class="modal fade " id="myHisModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myHisModalLabel">填写事件信息</h4>
+          </div>
+          <div class="modal-body">
+            <div>
+              <table class="table table table-striped table-hover">
+                <thead>
+                <tr>
+                  <td class="text-center" colspan="3">详情</td>
+
+
+                </tr>
+                <tr>
+                  <td>键</td>
+                  <td>值</td>
+
+
+
+                </tr>
+
+
+                </thead>
+                <tbody  id="hisDetail">
+
+
+                </tbody>
+              </table>
+
+            </div>
+
+            <!--            end row-->
+          </div>
+          <!-- end modal-body-->
+          <div class="modal-footer">
+
+
+            <button type="button"   class="btn btn-default" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+   
+  </body>
+</html>

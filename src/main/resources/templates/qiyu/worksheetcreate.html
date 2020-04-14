@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>创建工单</title>
+
+    <!-- Bootstrap -->
+    <link th:href="@{/css/bootstrap.min.css}"   rel="stylesheet"/>
+
+    <script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script  >
+
+        $(function () {
+            $("#login").click(
+                function () {
+                    var contextPath1 = "http://192.168.1.131:8091/";
+                    // var contextPath ="${apiPath}" ;
+                    var url1 = contextPath1 + "api/test/checksum";
+
+                    $.ajax({
+                        type: "post",
+                        url: url1,
+                        async: false, //不是异步处理
+                        data:{
+                            "title":"工单标题",
+                            "uid":"someone",
+                            "uniqueId":"123456789ABCDE",
+                            "typeId":12345,
+                            "content":"我有一个问题",
+                            "userName":"游客1",
+                            "userMobile":"18888888888",
+                            "userEmail":"some@163.com",
+                            "targetStaffId":12345,
+                            "targetGroupId":12345,
+                            "staffId":12345,
+                            "priority": 5,
+                            "templateId":1234,
+                            "followerIds":["1001","1003"],
+                            "attachments":[
+                                {
+                                    "fileName":"附件1.txt",
+                                    "type":1,
+                                    "payload":"附件BASE64"
+                                }
+                            ],
+                            "properties":[
+                                {
+                                    "key":"服务器",
+                                    "value":"瘦西湖"
+                                },
+                                {
+                                    "key":"玩家ID",
+                                    "value":"12345"
+                                }
+                            ],
+                            "customFields":[
+                                {
+                                    "id":12345,
+                                    "value":"你好"
+                                },
+                                {
+                                    "id":12346,
+                                    "value":"恩"
+                                }
+                            ]
+                        },
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+
+                        success: function (data) {
+                            var contextPath = "https://qiyukf.com/openapi/v2/ticket/create";
+                            // var contextPath ="${apiPath}" ;
+                            var url = contextPath + "?appKey=44da96f51a929aac95be05af1e920953&time="+data.dt+"&checksum="+data.checksum;
+                            $.ajax({
+                                type: "post",
+                                url: url,
+                                async: false, //不是异步处理
+                                data:{
+                                    "title":"工单标题",
+                                    "uid":"someone",
+                                    "uniqueId":"123456789ABCDE",
+                                    "typeId":12345,
+                                    "content":"我有一个问题",
+                                    "userName":"游客1",
+                                    "userMobile":"18888888888",
+                                    "userEmail":"some@163.com",
+                                    "targetStaffId":12345,
+                                    "targetGroupId":12345,
+                                    "staffId":12345,
+                                    "priority": 5,
+                                    "templateId":1234,
+                                    "followerIds":["1001","1003"],
+                                    "attachments":[
+                                        {
+                                            "fileName":"附件1.txt",
+                                            "type":1,
+                                            "payload":"附件BASE64"
+                                        }
+                                    ],
+                                    "properties":[
+                                        {
+                                            "key":"服务器",
+                                            "value":"瘦西湖"
+                                        },
+                                        {
+                                            "key":"玩家ID",
+                                            "value":"12345"
+                                        }
+                                    ],
+                                    "customFields":[
+                                        {
+                                            "id":12345,
+                                            "value":"你好"
+                                        },
+                                        {
+                                            "id":12346,
+                                            "value":"恩"
+                                        }
+                                    ]
+                                },
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+
+                                success: function (data) {
+                                    if (data.code == 200) {
+                                        //  alert(data.code.toString());
+                                        alert(data.message);
+
+                                        //跳转到主页
+                                        // window.location.href = contextPath + "home";
+
+                                    } else {
+                                        alert(data.errMsg.toString());
+                                        // window.location.href=contextPath+"/login";
+                                    }
+                                },
+                                error: function (result) {
+                                    alert("NAN11111");
+
+                                }
+
+
+                            });
+                        },
+                        error: function (result) {
+                            alert("第一层NAN");
+
+                        }
+
+
+                    });
+
+                    {
+
+                    }
+
+
+                }
+
+
+            )});
+
+
+
+
+
+
+
+
+
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<body class="bg-info" >
+<br/>
+<br/>
+<br/>
+<br/>
+
+<div class="container   ">
+    <div class="row">
+
+        <div class="col-md-4 col-sm-8 col-xs-8 col-md-offset-4 col-sm-offset-2 col-xs-offset-2  ">
+            <div class="m-1">
+
+                <button id="login" class="btn btn-lg btn-primary btn-block"  >创建工单</button>
+
+            </div>
+
+            <br/>
+
+        </div>
+
+    </div>
+
+
+</div> <!-- /container -->
+
+</body>
+</html>
